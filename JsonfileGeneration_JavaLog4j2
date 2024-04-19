@@ -1,0 +1,52 @@
+To add a new feature to generate a JSON file using a provided JSON template and capturing the source of the servlet call using the thread hash code or some events, you can follow these steps:
+
+Add the required JSON library to your project: 
+can use Jackson, Gson, or the built-in JSON 
+Create a JSON template class: structure of the JSON template - have the fields and keys in JSON template.
+Implement the JSON generation logic: 
+Create a separate class to handle the JSON generation process. 
+Use the JSON library to generate the JSON file: 
+After populating the JSON template class with the required data, use the chosen JSON library to convert the class instance to a JSON string
+. Then, write this JSON string to a file using Java's file I/O operations.
+// JSON template class
+public class JsonTemplate {
+    private String sourceThreadHashCode;
+    private String logMessage;
+    // required to Add more fields as needed
+    // Getters and setters
+}
+
+// JSON generation logic
+public class JsonGenerator {
+    public static void generateJsonLog(String logMessage) {
+        JsonTemplate template = new JsonTemplate();
+        template.setSourceThreadHashCode(Thread.currentThread().hashCode() + "");
+        template.setLogMessage(logMessage);
+        
+        // Use Jackson to convert the template to JSON
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(template);
+            
+            // Write the JSON string to a file
+            FileWriter fileWriter = new FileWriter("path/to/json/file.json");
+            fileWriter.write(json);
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+// Usage in your servlet or component
+public class MyServlet extends HttpServlet {
+    // ...
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Your existing servlet logic
+        
+        // Generate JSON log
+        JsonGenerator.generateJsonLog("This is a log message from MyServlet");
+    }
+}
